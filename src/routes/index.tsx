@@ -52,7 +52,7 @@ function Index() {
     } catch { /* ignore */ }
   }, []);
   useEffect(() => {
-    document.documentElement.dataset.theme = theme;
+    document.documentElement.dataset["theme"] = theme;
     try { localStorage.setItem(THEME_KEY, theme); } catch { /* ignore */ }
   }, [theme]);
   const persistViews = (v: SavedView[]) => { setViews(v); localStorage.setItem(VIEWS_KEY, JSON.stringify(v)); };
