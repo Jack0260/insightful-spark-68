@@ -11,7 +11,7 @@ const tooltipStyle = {
 };
 
 export function ChartCard({ title, kind, data, className = "" }: { title: string; kind: "line" | "bar" | "pie"; data: { name: string; value: number }[]; className?: string }) {
-  const summary = data.length ? `${data.length} points. Highest: ${[...data].sort((a, b) => b.value - a.value)[0].name}.` : "No data";
+  const summary = data.length ? `${data.length} points. Highest: ${[...data].sort((a, b) => b.value - a.value)[0]!.name}.` : "No data";
   let shown = data;
   if (kind === "pie" && data.length > 6) {
     const top = data.slice(0, 5);

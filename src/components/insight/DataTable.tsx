@@ -64,7 +64,7 @@ export function DataTable({ ds, rows }: { ds: Dataset; rows: Row[] }) {
           </div>
           <div style={{ height: v.getTotalSize(), position: "relative" }}>
             {v.getVirtualItems().map((vi) => {
-              const r = sorted[vi.index];
+              const r = sorted[vi.index]!;
               return (
                 <div
                   key={vi.key}

@@ -7,7 +7,7 @@ export interface AskResult {
   groupBy: string;
   isDate: boolean;
   bucket: "day" | "month";
-  from?: string;
+  from?: string | undefined;
   title: string;
 }
 
@@ -42,11 +42,11 @@ export function parseQuestion(input: string, cols: Column[], maxDate?: Date): As
   const left = m ? q.slice(0, m.index) : q;
   const right = m ? m[1] : "";
 
-  let metric = findCol(left, nums) ?? null;
+  let metric: Column | null = findCol(left, nums) ?? null;
   if (!metric && agg !== "count") metric = findCol(q, nums) ?? null;
   if (!metric && agg !== "count") {
     if (!nums.length) agg = "count";
-    else metric = nums[0];
+    else metric = nums[0] ?? null;
   }
 
   let group = findCol(right, dims);
@@ -66,7 +66,7 @@ export function parseQuestion(input: string, cols: Column[], maxDate?: Date): As
   if (t && dateCol) {
     const nUnits = Number(t[1] ?? 1);
     const end = maxDate ? new Date(maxDate) : new Date();
-    const days = { day: 1, week: 7, month: 30.44, year: 365 }[t[2] as "day"];
+    const days = ({ day: 1, week: 7, month: 30.44, year: 365 } as Record<string, number>)[t[2] ?? "day"] ?? 1;
     from = iso(new Date(end.getTime() - Math.round(nUnits * days) * 86400000));
   } else if (/\b(this year|ytd)\b/.test(q) && dateCol) {
     from = `${(maxDate ?? new Date()).getFullYear()}-01-01`;
@@ -78,7 +78,7 @@ export function parseQuestion(input: string, cols: Column[], maxDate?: Date): As
   else if (/\b(line|trend)\b/.test(q)) chart = "line";
   else if (/\b(bar|column|compare)\b/.test(q)) chart = "bar";
 
-  const metricLabel = agg === "count" ? "Count of rows" : `${agg === "sum" ? "Total" : agg[0].toUpperCase() + agg.slice(1)} ${metric!.name}`;
+  const metricLabel = agg === "count" ? "Count of rows" : `${agg === "sum" ? "Total" : agg.charAt(0).toUpperCase() + agg.slice(1)} ${metric!.name}`;
   const title = `${metricLabel} by ${group.name}${isDate ? ` (${bucket})` : ""}${t ? ` · last ${t[1] ?? 1} ${t[2]}${Number(t[1] ?? 1) > 1 ? "s" : ""}` : ""}`;
   return { chart, metric: agg === "count" ? null : metric!.name, agg, groupBy: group.name, isDate, bucket, from, title };
 }

@@ -190,9 +190,9 @@ export function sampleDataset(n = 12000): Dataset {
     raw.push({
       order_id: `ORD-${100000 + i}`,
       date: d.toISOString().slice(0, 10),
-      region: regions[Math.floor(rnd() * regions.length)],
-      product: products[Math.floor(rnd() * products.length)],
-      channel: channels[Math.floor(rnd() * channels.length)],
+      region: regions[Math.floor(rnd() * regions.length)]!,
+      product: products[Math.floor(rnd() * products.length)]!,
+      channel: channels[Math.floor(rnd() * channels.length)]!,
       units: String(units),
       sales: (units * price).toFixed(2),
       profit: (units * price * (0.1 + rnd() * 0.3)).toFixed(2),
