@@ -40,7 +40,7 @@ export function parseQuestion(input: string, cols: Column[], maxDate?: Date): As
   // split on "by/per/over"
   const m = q.match(/\b(?:by|per|over|across|for each)\b(.*)/);
   const left = m ? q.slice(0, m.index) : q;
-  const right = m ? m[1] : "";
+  const right = m?.[1] ?? "";
 
   let metric: Column | null = findCol(left, nums) ?? null;
   if (!metric && agg !== "count") metric = findCol(q, nums) ?? null;

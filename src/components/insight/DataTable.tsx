@@ -75,7 +75,7 @@ export function DataTable({ ds, rows }: { ds: Dataset; rows: Row[] }) {
                 >
                   {cols.map((c) => (
                     <div key={c.name} role="cell" className={`px-3 flex items-center truncate ${c.type === "number" ? "num justify-end" : ""}`}>
-                      {formatCell(r[c.name])}
+                      {formatCell(r[c.name] ?? null)}
                     </div>
                   ))}
                 </div>
