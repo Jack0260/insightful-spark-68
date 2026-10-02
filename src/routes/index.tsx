@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
-import { Download, FileUp, MessageSquareText, Save, Trash2, X, Database, RotateCcw } from "lucide-react";
+import { Download, FileUp, MessageSquareText, Save, Trash2, X, Database, RotateCcw, Palette } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ChartCard } from "@/components/insight/ChartCard";
 import { DataTable } from "@/components/insight/DataTable";
 import { aggregate, applyFilters, download, emptyFilters, formatNum, parseCsv, sampleDataset, toCsv, type Dataset, type Filters } from "@/lib/data";
@@ -25,6 +26,9 @@ export const Route = createFileRoute("/")({
 
 interface SavedView { id: string; name: string; dataset: string; filters: Filters; metric: string; question: string }
 const VIEWS_KEY = "insightboard.views";
+const THEME_KEY = "insightboard.theme";
+const themes = ["graphite", "ocean", "coral", "midnight"] as const;
+type Theme = (typeof themes)[number];
 const selectCls = "h-9 rounded-md border border-input bg-card px-2 text-sm";
 
 function Index() {
@@ -37,11 +41,20 @@ function Index() {
   const [views, setViews] = useState<SavedView[]>([]);
   const [loading, setLoading] = useState(false);
   const [drag, setDrag] = useState(false);
+  const [theme, setTheme] = useState<Theme>("graphite");
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     try { setViews(JSON.parse(localStorage.getItem(VIEWS_KEY) ?? "[]")); } catch { /* ignore */ }
+    try {
+      const stored = localStorage.getItem(THEME_KEY);
+      if (themes.some((option) => option === stored)) setTheme(stored as Theme);
+    } catch { /* ignore */ }
   }, []);
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    try { localStorage.setItem(THEME_KEY, theme); } catch { /* ignore */ }
+  }, [theme]);
   const persistViews = (v: SavedView[]) => { setViews(v); localStorage.setItem(VIEWS_KEY, JSON.stringify(v)); };
 
   const load = (d: Dataset) => {
@@ -132,6 +145,21 @@ function Index() {
             {ds && <span className="text-xs text-sidebar-foreground/70 num truncate max-w-48">· {ds.name}</span>}
           </div>
           <input ref={fileRef} type="file" accept=".csv,text/csv" className="sr-only" id="csv-input" aria-label="Upload CSV file" onChange={(e) => { onFile(e.target.files?.[0]); e.target.value = ""; }} />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button size="sm" variant="secondary" aria-label={`Color theme: ${theme}`} title="Color theme"><Palette aria-hidden /><span className="hidden sm:inline">Theme</span></Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="min-w-40">
+              <DropdownMenuLabel>Color theme</DropdownMenuLabel>
+              <DropdownMenuRadioGroup value={theme} onValueChange={(value) => { if (themes.some((option) => option === value)) setTheme(value as Theme); }}>
+                {themes.map((option) => (
+                  <DropdownMenuRadioItem key={option} value={option} className="gap-2 capitalize">
+                    <span className={`theme-swatch theme-swatch-${option}`} aria-hidden />{option}
+                  </DropdownMenuRadioItem>
+                ))}
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Button size="sm" variant="secondary" onClick={() => fileRef.current?.click()}><FileUp aria-hidden />Upload CSV</Button>
           {ds && (
             <>
