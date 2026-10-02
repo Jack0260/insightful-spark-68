@@ -198,5 +198,5 @@ export function sampleDataset(n = 12000): Dataset {
       profit: (units * price * (0.1 + rnd() * 0.3)).toFixed(2),
     });
   }
-  return buildDataset("sample-sales.csv", raw, Object.keys(raw[0]));
+  return buildDataset("sample-sales.csv", raw, Object.keys(raw[0]!));
 }
