@@ -180,7 +180,7 @@ function Index() {
             </section>
             {ask && (
               <div className="relative">
-                <ChartCard title={ask.title} kind={ask.chart} data={askData} />
+                <ChartCard className="pr-12" title={ask.title} kind={ask.chart} data={askData} />
                 <Button size="icon" variant="ghost" className="absolute top-2 right-2" aria-label="Close answer chart" onClick={() => setAsk(null)}><X aria-hidden /></Button>
               </div>
             )}
